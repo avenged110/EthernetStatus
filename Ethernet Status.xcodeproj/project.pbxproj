@@ -1,0 +1,399 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 90;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7112DC440ACE23EACFFF171F /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = C2435B6D083D4A233EDA9F0E /* COPYING */; };
+		CE40B6422E31BBA800BD5DD4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE40B6412E31BBA800BD5DD4 /* Assets.xcassets */; };
+		CE40F8A32E6628DC0065C760 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE40F8A22E6628DC0065C760 /* Preferences.swift */; };
+		CE40F8AC2E6780320065C760 /* InterfaceReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE40F8AB2E6780320065C760 /* InterfaceReader.swift */; };
+		CE40F8AE2E680FD80065C760 /* StatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE40F8AD2E680FD80065C760 /* StatusSectionView.swift */; };
+		CE5CF50E2E3408E300C12B78 /* EthernetMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5CF5092E3408E300C12B78 /* EthernetMonitor.swift */; };
+		CE6054E42F75337A009382C0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6054E32F75337A009382C0 /* SettingsView.swift */; };
+		CE613BC92E70DF26005256CB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE613BC82E70DF26005256CB /* AppDelegate.swift */; };
+		CEAB00022F0000020000AAA1 /* DebugLogKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAB00012F0000010000AAA1 /* DebugLogKit.swift */; };
+		CEAB00042F0000040000AAA1 /* SettingsKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAB00032F0000030000AAA1 /* SettingsKit.swift */; };
+		CEAB00062F0000060000AAA1 /* MenuControlKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAB00052F0000050000AAA1 /* MenuControlKit.swift */; };
+		CEAB00082F0000080000AAA1 /* EthernetStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAB00072F0000070000AAA1 /* EthernetStatusMenu.swift */; };
+		CEAB000A2F00000A0000AAA1 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = CEAB00092F0000090000AAA1 /* Credits.html */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C2435B6D083D4A233EDA9F0E /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		CE40B63A2E31BBA700BD5DD4 /* Ethernet Status.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ethernet Status.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE40B6412E31BBA800BD5DD4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CE40B64B2E31BBA800BD5DD4 /* Ethernet_Status.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ethernet_Status.entitlements; sourceTree = "<group>"; };
+		CE40F8A22E6628DC0065C760 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		CE40F8AB2E6780320065C760 /* InterfaceReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceReader.swift; sourceTree = "<group>"; };
+		CE40F8AD2E680FD80065C760 /* StatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSectionView.swift; sourceTree = "<group>"; };
+		CE5CF5092E3408E300C12B78 /* EthernetMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthernetMonitor.swift; sourceTree = "<group>"; };
+		CE6054E32F75337A009382C0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		CE613BC82E70DF26005256CB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CEAB00012F0000010000AAA1 /* DebugLogKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogKit.swift; sourceTree = "<group>"; };
+		CEAB00032F0000030000AAA1 /* SettingsKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsKit.swift; sourceTree = "<group>"; };
+		CEAB00052F0000050000AAA1 /* MenuControlKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuControlKit.swift; sourceTree = "<group>"; };
+		CEAB00072F0000070000AAA1 /* EthernetStatusMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthernetStatusMenu.swift; sourceTree = "<group>"; };
+		CEAB00092F0000090000AAA1 /* Credits.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Credits.html; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CE40B6372E31BBA700BD5DD4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CE40B6312E31BBA700BD5DD4 = {
+			isa = PBXGroup;
+			children = (
+				CE40B63C2E31BBA700BD5DD4 /* Ethernet Status */,
+				CE40B63B2E31BBA700BD5DD4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CE40B63B2E31BBA700BD5DD4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE40B63A2E31BBA700BD5DD4 /* Ethernet Status.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CE40B63C2E31BBA700BD5DD4 /* Ethernet Status */ = {
+			isa = PBXGroup;
+			children = (
+				CE613BC82E70DF26005256CB /* AppDelegate.swift */,
+				CEAB00072F0000070000AAA1 /* EthernetStatusMenu.swift */,
+				CEAB00052F0000050000AAA1 /* MenuControlKit.swift */,
+				CE40F8AD2E680FD80065C760 /* StatusSectionView.swift */,
+				CEAB00032F0000030000AAA1 /* SettingsKit.swift */,
+				CE6054E32F75337A009382C0 /* SettingsView.swift */,
+				CE5CF5092E3408E300C12B78 /* EthernetMonitor.swift */,
+				CE40F8AB2E6780320065C760 /* InterfaceReader.swift */,
+				CE40F8A22E6628DC0065C760 /* Preferences.swift */,
+				CEAB00012F0000010000AAA1 /* DebugLogKit.swift */,
+				CEAB00092F0000090000AAA1 /* Credits.html */,
+				C2435B6D083D4A233EDA9F0E /* COPYING */,
+				CE40B6412E31BBA800BD5DD4 /* Assets.xcassets */,
+				CE40B64B2E31BBA800BD5DD4 /* Ethernet_Status.entitlements */,
+			);
+			path = "Ethernet Status";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CE40B6392E31BBA700BD5DD4 /* Ethernet Status */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE40B64E2E31BBA800BD5DD4 /* Build configuration list for PBXNativeTarget "Ethernet Status" */;
+			buildPhases = (
+				CE40B6362E31BBA700BD5DD4 /* Sources */,
+				CE40B6372E31BBA700BD5DD4 /* Frameworks */,
+				CE40B6382E31BBA700BD5DD4 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "Ethernet Status";
+			productName = "Ethernet Status";
+			productReference = CE40B63A2E31BBA700BD5DD4 /* Ethernet Status.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CE40B6322E31BBA700BD5DD4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					CE40B6392E31BBA700BD5DD4 = {
+						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
+					};
+				};
+			};
+			buildConfigurationList = CE40B6352E31BBA700BD5DD4 /* Build configuration list for PBXProject "Ethernet Status" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CE40B6312E31BBA700BD5DD4;
+			preferredProjectObjectVersion = 90;
+			productRefGroup = CE40B63B2E31BBA700BD5DD4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CE40B6392E31BBA700BD5DD4 /* Ethernet Status */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CE40B6382E31BBA700BD5DD4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				CE40B6422E31BBA800BD5DD4 /* Assets.xcassets in Resources */,
+				CEAB000A2F00000A0000AAA1 /* Credits.html in Resources */,
+				7112DC440ACE23EACFFF171F /* COPYING in Resources */,
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CE40B6362E31BBA700BD5DD4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				CE6054E42F75337A009382C0 /* SettingsView.swift in Sources */,
+				CE40F8A32E6628DC0065C760 /* Preferences.swift in Sources */,
+				CE40F8AC2E6780320065C760 /* InterfaceReader.swift in Sources */,
+				CE613BC92E70DF26005256CB /* AppDelegate.swift in Sources */,
+				CE40F8AE2E680FD80065C760 /* StatusSectionView.swift in Sources */,
+				CEAB00022F0000020000AAA1 /* DebugLogKit.swift in Sources */,
+				CEAB00042F0000040000AAA1 /* SettingsKit.swift in Sources */,
+				CEAB00062F0000060000AAA1 /* MenuControlKit.swift in Sources */,
+				CEAB00082F0000080000AAA1 /* EthernetStatusMenu.swift in Sources */,
+				CE5CF50E2E3408E300C12B78 /* EthernetMonitor.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CE40B64C2E31BBA800BD5DD4 /* Debug configuration for PBXProject "Ethernet Status" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CE40B64D2E31BBA800BD5DD4 /* Release configuration for PBXProject "Ethernet Status" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		CE40B64F2E31BBA800BD5DD4 /* Debug configuration for PBXNativeTarget "Ethernet Status" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Ethernet Status/Ethernet_Status.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 90;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ethernet Status";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 avenged110. Licensed under GPL-3.0-only.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.EthernetStatus;
+				PRODUCT_NAME = "Ethernet Status";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_STRICT_MEMORY_SAFETY = YES;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		CE40B6502E31BBA800BD5DD4 /* Release configuration for PBXNativeTarget "Ethernet Status" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Ethernet Status/Ethernet_Status.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 90;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ethernet Status";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 avenged110. Licensed under GPL-3.0-only.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = app.EthernetStatus;
+				PRODUCT_NAME = "Ethernet Status";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_STRICT_MEMORY_SAFETY = YES;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CE40B6352E31BBA700BD5DD4 /* Build configuration list for PBXProject "Ethernet Status" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE40B64C2E31BBA800BD5DD4 /* Debug configuration for PBXProject "Ethernet Status" */,
+				CE40B64D2E31BBA800BD5DD4 /* Release configuration for PBXProject "Ethernet Status" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		CE40B64E2E31BBA800BD5DD4 /* Build configuration list for PBXNativeTarget "Ethernet Status" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE40B64F2E31BBA800BD5DD4 /* Debug configuration for PBXNativeTarget "Ethernet Status" */,
+				CE40B6502E31BBA800BD5DD4 /* Release configuration for PBXNativeTarget "Ethernet Status" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CE40B6322E31BBA700BD5DD4 /* Project object */;
+}
