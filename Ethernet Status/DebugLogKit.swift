@@ -30,6 +30,11 @@
 //   await Logger.shutdownLoggingAwaiting()    // app termination (preferred)
 //   Logger.shutdownLogging()                  // fire-and-forget (logging toggled off)
 //   Logger.shutdownLoggingBlocking()          // synchronous terminate hooks
+//
+// To surface problems in the app itself, whether or not the log file is on, pass an
+// observer at bootstrap; it sees every message at or above its level:
+//
+//   observer: LogObserver(minimumLevel: .error) { message, level, category, date in … }
 
 import Foundation
 import os
@@ -84,6 +89,38 @@ public protocol LogSink: Sendable {
     func receive(line: String, level: LogLevel, category: String?, occurredAt: Date)
 }
 
+/// Sees messages at or above `minimumLevel` as they are logged, whether or not logging is
+/// on, so an app can show its own errors (a status badge, a problems list) without asking
+/// anyone to turn on a debug log first. Unlike a `LogSink`, it gets the raw message, not
+/// a formatted line, and gets it even while the log file is off.
+///
+/// `receive` runs synchronously on the thread that logged, before the call returns, so it
+/// must be quick and must not block: hand the message to your own queue. A message the
+/// observer logs from inside `receive` is written as usual but not observed again, so it
+/// can't loop.
+public struct LogObserver: Sendable {
+    public var minimumLevel: LogLevel
+    public var receive: @Sendable (_ message: String, _ level: LogLevel, _ category: String?, _ occurredAt: Date) -> Void
+
+    public init(minimumLevel: LogLevel = .error,
+                receive: @escaping @Sendable (_ message: String, _ level: LogLevel, _ category: String?, _ occurredAt: Date) -> Void) {
+        self.minimumLevel = minimumLevel
+        self.receive = receive
+    }
+
+    func observes(_ level: LogLevel) -> Bool { level >= minimumLevel }
+
+    /// Hands a message to `receive`, unless this thread is already inside it.
+    func deliver(_ message: String, level: LogLevel, category: String?, occurredAt: Date) {
+        let key = "DebugLogKit.LogObserver.delivering"
+        let thread = Thread.current.threadDictionary
+        guard thread[key] == nil else { return }
+        thread[key] = true
+        defer { thread.removeObject(forKey: key) }
+        receive(message, level, category, occurredAt)
+    }
+}
+
 /// Everything a project can vary, in one value. Installed by `Logger.bootstrap`.
 public struct LoggerConfiguration: Sendable {
     /// Log file name, e.g. `"Toggler.log"`.
@@ -129,6 +166,9 @@ public struct LoggerConfiguration: Sendable {
     /// Extra consumers of each line.
     public var sinks: [any LogSink]
 
+    /// Sees messages at or above its level even while logging is off. Nil by default.
+    public var observer: LogObserver?
+
     public init(fileName: String,
                 destination: LogDestination = .containerLibraryLogs,
                 isEnabled: @escaping @Sendable () -> Bool,
@@ -140,7 +180,8 @@ public struct LoggerConfiguration: Sendable {
                 sanitizesControlCharacters: Bool = true,
                 minimumLevel: LogLevel = .debug,
                 includesLevelInOutput: Bool = false,
-                sinks: [any LogSink] = []) {
+                sinks: [any LogSink] = [],
+                observer: LogObserver? = nil) {
         self.fileName = fileName
         self.destination = destination
         self.isEnabled = isEnabled
@@ -153,6 +194,7 @@ public struct LoggerConfiguration: Sendable {
         self.minimumLevel = minimumLevel
         self.includesLevelInOutput = includesLevelInOutput
         self.sinks = sinks
+        self.observer = observer
     }
 
     /// Used until `Logger.bootstrap` runs. Names the file after the bundle and reads the
@@ -207,8 +249,8 @@ private var configuration: LoggerConfiguration { ConfigurationBox.shared.current
 /// Conform a type to get `log(...)` for free, tagged with the type's own name.
 public protocol Loggable { static var logTag: String { get } }
 
-// These guard on the enabled check before dispatching, so conforming types need not
-// repeat it.
+// These guard on the enabled check (or an interested observer) before dispatching, so
+// conforming types need not repeat it.
 //
 // `message` is an `@autoclosure`: the caller's interpolation is not evaluated when logging
 // is off, so a hot path that builds an involved diagnostic string pays nothing. It is
@@ -218,13 +260,11 @@ public extension Loggable {
     static var logTag: String { "[\(String(describing: Self.self))]" }
 
     func log(_ message: @autoclosure () -> String, level: LogLevel = .info) {
-        guard Logger.isLoggingEnabled else { return }
-        Logger.log(message(), level: level, cName: Self.logTag)
+        Logger.route(message, level: level, category: Self.logTag)
     }
 
     static func log(_ message: @autoclosure () -> String, level: LogLevel = .info) {
-        guard Logger.isLoggingEnabled else { return }
-        Logger.log(message(), level: level, cName: Self.logTag)
+        Logger.route(message, level: level, category: Self.logTag)
     }
 
     /// Awaitable counterpart to `log(_:)`, for the call sites that must know the message
@@ -817,12 +857,35 @@ public enum Logger {
     /// The main entry point. Returns immediately; all work happens asynchronously.
     ///
     /// Call sites are expected to guard on `isLoggingEnabled` first — the `Loggable`
-    /// extension does it for you.
+    /// extension does it for you, and also lets through what an observer wants. A call
+    /// site that guards on `isLoggingEnabled` itself hides its messages from the observer.
     public static func log(_ message: String, level: LogLevel = .info, cName: String? = nil) {
         // `Date()` is read on the calling thread, so the timestamp is the moment of the
         // event rather than the moment the logger drained it.
+        let now = Date()
+        observe(message, level: level, category: cName, occurredAt: now)
         LogPipe.send(LogEntry(message: message, level: level, category: cName,
-                              occurredAt: Date(), force: false))
+                              occurredAt: now, force: false))
+    }
+
+    /// The `Loggable` path: evaluates the message only if logging is on or the observer
+    /// wants it, and writes it only if logging is on, so with no observer it behaves
+    /// exactly as a guard on `isLoggingEnabled` did.
+    fileprivate static func route(_ message: () -> String, level: LogLevel, category: String) {
+        let config = configuration
+        let enabled = config.isEnabled()
+        let observer = config.observer.flatMap { $0.observes(level) ? $0 : nil }
+        guard enabled || observer != nil else { return }
+        let text = message()
+        let now = Date()
+        observer?.deliver(text, level: level, category: category, occurredAt: now)
+        guard enabled else { return }
+        LogPipe.send(LogEntry(message: text, level: level, category: category, occurredAt: now, force: false))
+    }
+
+    private static func observe(_ message: String, level: LogLevel, category: String?, occurredAt: Date) {
+        guard let observer = configuration.observer, observer.observes(level) else { return }
+        observer.deliver(message, level: level, category: category, occurredAt: occurredAt)
     }
 
     /// Records a message even though logging has just been switched off.
@@ -833,17 +896,21 @@ public enum Logger {
     /// written. Follow it with `shutdownLogging()`, which flushes it.
     public static func logForced(_ message: String, level: LogLevel = .info,
                                  cName: String? = nil) {
+        let now = Date()
+        observe(message, level: level, category: cName, occurredAt: now)
         LogPipe.send(LogEntry(message: message, level: level, category: cName,
-                              occurredAt: Date(), force: true))
+                              occurredAt: now, force: true))
     }
 
     /// Awaitable `log`, for call sites that must know the message reached `LoggerCore`'s
     /// buffer before proceeding — most notably just before a shutdown that flushes it.
     public static func logAwaiting(_ message: String, level: LogLevel = .info,
                                    cName: String? = nil) async {
+        let now = Date()
+        observe(message, level: level, category: cName, occurredAt: now)
         guard isLoggingEnabled else { return }
         LogPipe.send(LogEntry(message: message, level: level, category: cName,
-                              occurredAt: Date(), force: false))
+                              occurredAt: now, force: false))
         await LogPipe.flushBarrier()
     }
 

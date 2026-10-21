@@ -149,9 +149,13 @@ public final class SymbolCache {
     // A plain dictionary rather than NSCache. The set of symbols an applet uses is small
     // and entirely known at launch (all of it prewarmed), so eviction is pure downside:
     // an NSCache can drop a glyph under memory pressure and pay to rebuild it during the
-    // very redraw that pressure made expensive. `clearCache()` covers the cases —
-    // appearance change, deliberate purge — where eviction is actually wanted.
+    // very redraw that pressure made expensive.
     private var cache: [String: NSImage] = [:]
+
+    // Specs that did not resolve on this system — a private glyph whose bundle moved, a
+    // symbol newer than this OS. Remembered so an icon refreshed on every observed change
+    // does not repeat the failed lookup each time.
+    private var missing: Set<String> = []
 
     // Separate cache for alpha-composited variants, so `image(_:alpha:)` does not allocate
     // a new NSImage on every call — e.g. on each network-state update, when the menu-bar
@@ -191,15 +195,22 @@ public final class SymbolCache {
     public func image(_ spec: SymbolSpec) -> NSImage? {
         let key = spec.cacheKey
         if let cached = cache[key] { return cached }
+        if missing.contains(key) { return nil }
 
         let base: NSImage?
         if spec.isPrivate {
-            guard let bundle = Self.coreGlyphsBundle else { return nil }
+            guard let bundle = Self.coreGlyphsBundle else {
+                missing.insert(key)
+                return nil
+            }
             base = NSImage(symbolName: spec.name, bundle: bundle, variableValue: 0.0)
         } else {
             base = NSImage(systemSymbolName: spec.name, accessibilityDescription: nil)
         }
-        guard var symbol = base else { return nil }
+        guard var symbol = base else {
+            missing.insert(key)
+            return nil
+        }
 
         var configuration: NSImage.SymbolConfiguration?
         if let pointSize = spec.pointSize, let weight = spec.weight {
@@ -256,24 +267,6 @@ public final class SymbolCache {
     /// menu bar and menu does no symbol construction. Call once at launch.
     public func prewarm(_ specs: [SymbolSpec]) {
         for spec in specs { _ = image(spec) }
-    }
-
-    /// Convenience for a run of symbols sharing one configuration.
-    public func prewarm(names: [String],
-                        pointSize: CGFloat? = nil,
-                        weight: NSFont.Weight? = nil,
-                        scale: NSImage.SymbolScale? = nil,
-                        isPrivate: Bool = false) {
-        prewarm(names.map {
-            SymbolSpec(name: $0, pointSize: pointSize, weight: weight,
-                       scale: scale, isPrivate: isPrivate)
-        })
-    }
-
-    /// Drops every cached image. For an appearance change or a deliberate purge.
-    public func clearCache() {
-        cache.removeAll(keepingCapacity: true)
-        alphaCache.removeAll(keepingCapacity: true)
     }
 }
 
@@ -553,26 +546,19 @@ public struct MenuControllerConfiguration {
     /// construction. The icon's own symbols are prewarmed automatically.
     public var prewarmSymbols: [SymbolSpec]
 
-    /// Raise the app to `.regular` while a window is open and drop back to `.accessory`
-    /// when it closes, so a menu-bar-only app's window gets a Dock tile and a menu bar for
-    /// as long as it is up. Toggler does this around its Settings window; drive it with
-    /// `beginWindowSession()` / `endWindowSession()`.
-    public var managesActivationPolicy: Bool
 
     public init(appName: String,
                 icon: @escaping () -> MenuBarIcon,
                 elements: @escaping () -> [MenuElement],
                 observing: (() -> Void)? = nil,
                 willOpen: (() -> Void)? = nil,
-                prewarmSymbols: [SymbolSpec] = [],
-                managesActivationPolicy: Bool = false) {
+                prewarmSymbols: [SymbolSpec] = []) {
         self.appName = appName
         self.icon = icon
         self.elements = elements
         self.observing = observing
         self.willOpen = willOpen
         self.prewarmSymbols = prewarmSymbols
-        self.managesActivationPolicy = managesActivationPolicy
     }
 }
 
@@ -608,24 +594,16 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
         return cache
     }()
 
-    private var isTerminating = false
-    private var openWindowCount = 0
-
     /// `applyIcon` runs on every observed change and every menu open, so a symbol this OS
     /// does not have would otherwise write a line to the log on each one.
     private var didWarnAboutMissingGlyph = false
 
-    private var observationTask: Task<Void, Never>?
+    /// Cleared by teardown, which stops the observation from re-arming.
+    private var isObserving = false
 
     public init(_ configuration: MenuControllerConfiguration) {
         self.configuration = configuration
         super.init()
-    }
-
-    // `isolated` runs deinit on the main actor (SE-0371, macOS 15.4+), so it can reach
-    // `observationTask` directly — no `nonisolated(unsafe)` mirror is needed.
-    isolated deinit {
-        observationTask?.cancel()
     }
 
     // MARK: Installation
@@ -654,22 +632,10 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
         log("\(configuration.appName) status item installed.")
     }
 
-    /// The status item's button, for the rare case that needs it directly (positioning a
-    /// popover, reading its window).
-    public var statusButton: NSStatusBarButton? { statusItem?.button }
-
     /// Re-reads the icon closure and applies the result. Called automatically on menu open
     /// and whenever an observed property changes.
     public func refreshIcon() {
         applyIcon(configuration.icon())
-    }
-
-    /// Rebuilds the menu's contents now, rather than waiting for the next open. Rarely
-    /// needed — the menu cannot be visible and stale at the same time — but available for
-    /// a change that must be reflected in an already-open menu.
-    public func refreshMenu() {
-        guard let menu else { return }
-        rebuild(menu)
     }
 
     // MARK: Icon
@@ -680,14 +646,17 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
         let resolved = icon.symbol.flatMap { SymbolCache.shared.image($0) }
             ?? icon.fallbackSymbol.flatMap { SymbolCache.shared.image($0) }
 
+        // Each property is written only when it changes. This runs on every observed
+        // change, and an identical write can still redraw the menu bar item.
         if let resolved {
-            button.image = SymbolCache.shared.image(resolved, alpha: icon.alpha)
-            button.title = ""
+            let image = SymbolCache.shared.image(resolved, alpha: icon.alpha)
+            if button.image !== image { button.image = image }
+            if !button.title.isEmpty { button.title = "" }
         } else if let fallbackTitle = icon.fallbackTitle {
             // No glyph resolved — a private-bundle symbol on a system that moved it, or a
             // system symbol newer than this OS. Text beats an empty status item.
-            button.image = nil
-            button.title = fallbackTitle
+            if button.image != nil { button.image = nil }
+            if button.title != fallbackTitle { button.title = fallbackTitle }
         } else if !didWarnAboutMissingGlyph {
             didWarnAboutMissingGlyph = true
             log("No glyph available for the status item.", level: .warning)
@@ -698,8 +667,10 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
         // alpha is 1.0 — so writing an accessibility description into the image would
         // stamp this status item's wording onto every other use of that glyph, including
         // glyphs rendered inside menu item titles.
-        button.setAccessibilityLabel(icon.accessibilityDescription ?? configuration.appName)
-        button.toolTip = icon.toolTip ?? icon.accessibilityDescription
+        let label = icon.accessibilityDescription ?? configuration.appName
+        if button.accessibilityLabel() != label { button.setAccessibilityLabel(label) }
+        let toolTip = icon.toolTip ?? icon.accessibilityDescription
+        if button.toolTip != toolTip { button.toolTip = toolTip }
     }
 
     // MARK: Observation
@@ -707,25 +678,26 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
     /// Watches the properties read by `configuration.observing` and refreshes the icon when
     /// any of them changes.
     ///
-    /// `withObservationTracking` fires its `onChange` exactly once, so it has to be
-    /// re-armed after every change. It is driven from a task here — rather than by
-    /// re-arming inside `onChange`, which is called while the property is mid-write — so
-    /// the refresh reads settled values.
+    /// `withObservationTracking` fires its `onChange` exactly once, so it is re-armed after
+    /// every change. `onChange` runs while the property is mid-write, so the refresh and the
+    /// re-arm are deferred to a main-actor task, which reads settled values. The task holds
+    /// the controller weakly and stops once teardown clears `isObserving`, so nothing waits
+    /// on a controller that is gone.
     private func startObserving() {
         guard configuration.observing != nil else { return }
-        observationTask?.cancel()
-        observationTask = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-                    withObservationTracking {
-                        self.configuration.observing?()
-                    } onChange: {
-                        continuation.resume()
-                    }
-                }
-                guard !Task.isCancelled else { return }
+        isObserving = true
+        observe()
+    }
+
+    private func observe() {
+        guard isObserving, let observing = configuration.observing else { return }
+        withObservationTracking {
+            observing()
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.isObserving else { return }
                 self.refreshIcon()
+                self.observe()
             }
         }
     }
@@ -953,61 +925,16 @@ public final class MenuController: NSObject, NSMenuDelegate, Loggable {
         }
     }
 
-    // MARK: Activation Policy
-
-    /// Call when opening a window from the menu. With `managesActivationPolicy` on, the
-    /// first open raises the app to `.regular` so the window gets a Dock tile and menu bar.
-    ///
-    /// Returns false when the app is terminating, in which case the caller should not open
-    /// the window: changing activation policy during termination leaves the process in a
-    /// state AppKit does not expect to unwind from.
-    @discardableResult
-    public func beginWindowSession() -> Bool {
-        guard !isTerminating else {
-            log("Skipping window open: the application is terminating.")
-            return false
-        }
-        guard configuration.managesActivationPolicy else { return true }
-        openWindowCount += 1
-        if openWindowCount == 1 {
-            NSApp.setActivationPolicy(.regular)
-            // One turn of the run loop, so the policy change takes effect before the window
-            // is ordered front. Without it the window can appear behind the frontmost app.
-            RunLoop.current.run(mode: .default, before: Date())
-        }
-        return true
-    }
-
-    /// Call when a window opened via `beginWindowSession()` closes. Drops back to
-    /// `.accessory` once the last one is gone — but never during termination, where the
-    /// policy is set once by the teardown path instead.
-    public func endWindowSession() {
-        guard configuration.managesActivationPolicy else { return }
-        openWindowCount = max(0, openWindowCount - 1)
-        if openWindowCount == 0, !isTerminating {
-            NSApp.setActivationPolicy(.accessory)
-        }
-    }
-
     // MARK: Teardown
 
-    /// Marks the app as terminating. After this, `beginWindowSession()` refuses, so a menu
-    /// item clicked during the teardown window cannot open a window into a dying process.
-    public func markTerminating() {
-        isTerminating = true
-    }
+    /// Kept so existing termination paths still compile. The controller has no
+    /// termination-sensitive work of its own; each app gates its window opening itself.
+    public func markTerminating() {}
 
     /// Synchronous teardown for `applicationWillTerminate`. Removes the status item so the
     /// menu bar does not hold a stale slot while the process unwinds.
     public func prepareForTerminationSynchronously() {
-        isTerminating = true
-
-        observationTask?.cancel()
-        observationTask = nil
-
-        if configuration.managesActivationPolicy {
-            NSApp.setActivationPolicy(.accessory)
-        }
+        isObserving = false
 
         menu?.removeAllItems()
         menu?.delegate = nil

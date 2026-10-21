@@ -177,105 +177,27 @@ private extension EthernetStatusMenu {
         for (index, iface) in interfaces.enumerated() {
             let bsd = iface.bsdName
             let title = iface.friendlyName ?? bsd
-            elements.append(headerRow(id: "iface.\(bsd).header", title: title))
+            elements.append(.groupHeading(title))
 
             if bsd == activeBsd {
-                elements.append(detailRow(id: "iface.\(bsd).primary", text: "Primary: Active"))
+                elements.append(.detail("Primary: Active"))
             }
-            elements.append(detailRow(id: "iface.\(bsd).bsd", text: "BSD Name: \(bsd)"))
+            elements.append(.detail("BSD Name: \(bsd)"))
             if let mac = iface.macAddress {
-                elements.append(detailRow(id: "iface.\(bsd).mac", text: "MAC: \(mac)"))
+                elements.append(.detail("MAC: \(mac)"))
             }
             if let ipv4 = iface.ipv4Address {
-                elements.append(detailRow(id: "iface.\(bsd).ipv4", text: "IPv4: \(ipv4)"))
+                elements.append(.detail("IPv4: \(ipv4)"))
             }
             if let vendor = iface.vendor {
-                elements.append(detailRow(id: "iface.\(bsd).vendor", text: "Vendor: \(vendor)"))
+                elements.append(.detail("Vendor: \(vendor)"))
             }
             if let model = iface.model {
-                elements.append(detailRow(id: "iface.\(bsd).model", text: "Model: \(model)"))
+                elements.append(.detail("Model: \(model)"))
             }
 
             if index < interfaces.count - 1 { elements.append(.separator) }
         }
         return elements
-    }
-
-    // MARK: Row factories
-    //
-    // Each row is an `NSView` whose first subview is the `NSTextField`, fed through
-    // `.custom` so it is created once per id and its text refreshed on every open via
-    // `update` — the bounded-cache alternative to minting a value-bearing id per row.
-
-    private static let detailIndent: CGFloat = 24.0
-
-    func headerRow(id: String, title: String) -> MenuElement {
-        .custom(id: id,
-                make: { Self.makeHeaderView(title: title) },
-                update: { view in Self.setText(title, in: view) })
-    }
-
-    func detailRow(id: String, text: String) -> MenuElement {
-        .custom(id: id,
-                make: { Self.makeDetailView(text: text) },
-                update: { view in Self.setText(text, in: view) })
-    }
-
-    static func setText(_ text: String, in view: NSView) {
-        (view.subviews.first as? NSTextField)?.stringValue = text
-        view.setAccessibilityLabel(text)
-    }
-
-    static func makeHeaderView(title: String) -> NSView {
-        let label = NSTextField(labelWithString: title)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = NSColor.labelColor
-        label.font = NSFont.systemFont(ofSize: 13, weight: .regular)
-        if let cell = label.cell as? NSTextFieldCell {
-            cell.lineBreakMode = .byTruncatingTail
-        }
-
-        let container = NSView()
-        container.addSubview(label)
-        container.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 14),
-            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 3),
-            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -3),
-            container.heightAnchor.constraint(greaterThanOrEqualToConstant: 20)
-        ])
-
-        let maxWidthConstraint = container.widthAnchor.constraint(lessThanOrEqualToConstant: 500)
-        maxWidthConstraint.priority = .defaultHigh
-        maxWidthConstraint.isActive = true
-
-        container.setAccessibilityRole(.staticText)
-        container.setAccessibilityLabel(title)
-        return container
-    }
-
-    static func makeDetailView(text: String) -> NSView {
-        let label = NSTextField(labelWithString: text)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = NSColor.tertiaryLabelColor
-        label.font = NSFont.systemFont(ofSize: 12)
-
-        let container = NSView()
-        container.addSubview(label)
-        container.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: detailIndent),
-            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 2),
-            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -2),
-            container.heightAnchor.constraint(greaterThanOrEqualToConstant: 18),
-            container.widthAnchor.constraint(lessThanOrEqualToConstant: 500)
-        ])
-        container.setAccessibilityRole(.staticText)
-        container.setAccessibilityLabel(text)
-        return container
     }
 }
